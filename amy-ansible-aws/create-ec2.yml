@@ -66,6 +66,7 @@
             name: "amyexample04"
             description: "testing"
             credential_type: 1                     # ID 1 = Machine Credential
+            organization: 1
             inputs:
               username: ec2-user
               ssh_key_data: "{{ aws_ec2_key_pair.key.private_key }}"
