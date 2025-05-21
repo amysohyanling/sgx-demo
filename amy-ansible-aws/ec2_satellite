@@ -1,0 +1,39 @@
+- name: Register EC2 instance to Red Hat Satellite
+  hosts: all
+  become: true
+  vars:
+    satellite_url: "https://satellite.7hmbl.sandbox2523.opentlc.com"
+    activation_key: "RHEL9"
+    org: "Default Organization"
+
+  tasks:
+
+    - name: Ensure subscription-manager is installed
+      ansible.builtin.yum:
+        name: subscription-manager
+        state: present
+
+    # - name: Clean previous registration (optional but safe)
+    #   ansible.builtin.command: subscription-manager clean
+    #   ignore_errors: true
+
+    - name: Register system to Satellite using activation key
+      ansible.builtin.command: >
+        subscription-manager register
+        --org="{{ org }}"
+        --activationkey="{{ activation_key }}"
+        --serverurl="{{ satellite_url }}"
+      register: register_result
+      changed_when: "'The system has been registered' in register_result.stdout"
+
+    - name: Enable auto-attach (if needed)
+      ansible.builtin.command: subscription-manager attach --auto
+      when: "'The system has been registered' in register_result.stdout"
+
+    - name: Ensure system is subscribed
+      ansible.builtin.command: subscription-manager status
+
+    - name: Enable Red Hat repos (optional - if not done via content view)
+      ansible.builtin.command: >
+        subscription-manager repos --enable=rhel-7-server-rpms
+      when: ansible_distribution_major_version == "7"
