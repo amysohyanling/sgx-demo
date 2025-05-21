@@ -11,6 +11,8 @@
     instance_type: t2.micro       # Choose instance type, check AWS for pricing
     vpc_id: vpc-01919eff30f3ad8f6
     sec_group: "launch-wizard"
+    aap_url : "https://ansible-1.7hmbl.sandbox2523.opentlc.com"
+    aap_token: "DSt35EGlGy4wnxwRupQHsPhZbUaoim"
 
   tasks:
     - name: Provisioning EC2 instances
@@ -45,6 +47,31 @@
         register: aws_ec2_key_pair
         # no_log: true
 
+      - name: Save private key to file
+        ansible.builtin.copy:
+          content: "{{ aws_ec2_key_pair.key.private_key }}"
+          dest: "./{{ key_name }}.pem"
+          mode: '0600'
+        when: aws_ec2_key_pair.key.private_key is defined
+
+      - name: Create a new AAP Machine Credential with generated EC2 key
+        uri:
+          url: "{{ aap_url }}/api/v2/credentials/"
+          method: POST
+          headers:
+            Authorization: "Bearer {{ aap_token }}"
+            Content-Type: "application/json"
+          body_format: json
+          body:
+            name: "amyexample03"
+            description: "testing1"
+            credential_type: 1                     # ID 1 = Machine Credential
+            inputs:
+              username: ec2-user
+              ssh_key_data: "{{ aws_ec2_key_pair.key.private_key }}"
+        when: aws_ec2_key_pair.key.private_key is defined
+        register: new_cred
+
       - name: Check available security groups
         amazon.aws.ec2_group_info:
           region: ap-southeast-2
@@ -74,7 +101,7 @@
 
       - name: Launch EC2 with valid SG ID
         amazon.aws.ec2_instance:
-          name: "amyexample02"
+          name: "amyexample03"
           region: "{{ region }}"
           image_id: "{{ image }}"
           instance_type: "{{ instance_type }}"
