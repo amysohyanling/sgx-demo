@@ -42,7 +42,6 @@
           name: "{{ key_name }}"
           region: "{{ region }}"
           state: present
-          create_on_missing: true
         register: aws_ec2_key_pair
         # no_log: true
 
