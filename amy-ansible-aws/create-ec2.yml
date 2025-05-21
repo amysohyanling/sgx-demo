@@ -48,7 +48,7 @@
 
       - name: Start an instance with a public IP address
         amazon.aws.ec2_instance:
-          name: "public-compute-instance"
+          name: "amyexample02"
           key_name: "{{ key_name }}"
           vpc_subnet_id: "{{ vpc_id }}"
           instance_type: "{{ instance_type }}"
@@ -59,8 +59,8 @@
           network:
             assign_public_ip: true
           image_id: "{{ image }}"
-          tags:
-            Environment: Testing
+          # tags:
+          #   Environment: Testing
 
       # Always require the 'create_ec2' tag to provision EC2 instance
       # tags: ['never', 'create_ec2'] 
