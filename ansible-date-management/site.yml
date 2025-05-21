@@ -1,0 +1,167 @@
+---
+- name: List to String Conversion
+  hosts: localhost
+  gather_facts: false
+  vars:
+    date_start: "2022-11-10"
+    time_start: "08:00:00"
+    date_end: "2022-11-10"
+    time_end: "21:00:00"
+
+    date_time_sample: '2024-10-02 15:49:20'
+
+    current_year_month_string: "{{ lookup('pipe', 'date -d \"8 hours\" +%Y%m') }}"
+    current_year_month_date_string: "{{ lookup('pipe', 'date -d \"8 hours\" +%Y%m%d') }}"
+    # Get UTC date time to Singapore time
+    # date_time_string: "{{ lookup('pipe','date -d \"now + 8 hours\" +%Y-%m-%d_%H-%M-%S') | string }}"
+  tasks:
+    - name: Get current SG Time
+      ansible.builtin.set_fact:
+        sg_date_time_before: "{{ lookup('pipe','date -d \"now + 8 hours\" +%Y%m%d%H%M%SZ') | string }}"
+
+    - name: Wait for 5 seconds
+      ansible.builtin.pause:
+        seconds: 5
+
+    - name: Get current SG Time again
+      ansible.builtin.set_fact:
+        sg_date_time_after: "{{ lookup('pipe','date -d \"now + 8 hours\" +%Y%m%d%H%M%SZ') | string }}"
+
+    - name: Time difference
+      ansible.builtin.debug:
+        msg:
+          - "{{ (sg_date_time_after | to_datetime('%Y%m%d%H%M%SZ') - sg_date_time_before | to_datetime('%Y%m%d%H%M%SZ')).total_seconds() | int  }}"
+
+    - pause:
+    - name: Print date variables
+      ansible.builtin.debug:
+        msg:
+          - "current_year_month_string: {{ current_year_month_string }}"
+          - "current_year_month_date_string: {{ current_year_month_date_string   }}"
+
+    - name: Set variables
+      set_fact:
+        date_time_epoch_value: "{{ (date_time_sample | to_datetime('%Y-%m-%d %H:%M:%S')).strftime('%s') | int + 60 }}"
+        date_time_sample_plus: "{{ lookup('pipe', 'date -d \"{{ date_time_sample }}+0 + 1 hours\" +%Y-%m-%d\\ %H:%M:%S') | string }}"
+
+    - name: Print date time
+      ansible.builtin.debug:
+        msg:
+          # - "{{ date_to_calc }}"
+          - "Original UTC: {{ (date_time_sample | to_datetime) }}"
+
+          # +0 at the end means, source is UTC
+          - "Original UTC to SGT + 1 hours: {{ lookup('pipe', 'date -d \"{{ date_time_sample }}+0 + 1 hours\" +%Y-%m-%d\\ %H:%M:%S') | string }}"
+
+          - "UTC to SGT + 10 minutes: {{ lookup('pipe', 'date -d \"{{ date_time_sample }}+0 + 10 minutes\" +%Y-%m-%d\\ %H:%M:%S') | string }}"
+          - "{{ (date_time_sample_plus | to_datetime('%Y-%m-%d %H:%M:%S')) > (date_time_sample | to_datetime('%Y-%m-%d %H:%M:%S')) }}"
+          - "epoch: {{ (date_time_sample | to_datetime('%Y-%m-%d %H:%M:%S')).strftime('%s')  }}"
+          - "epoch + 60 min: {{ (date_time_sample | to_datetime('%Y-%m-%d %H:%M:%S')).strftime('%s') | int + 3600 }}"
+          # - "epoch + 60 min: {{ (date_time_epoch_value | to_datetime) | strftime('%Y-%m-%d %H:%M:%S') }}"
+          - "Cleaned: {{ date_time_sample | replace('-', '') | replace(' ', '') | replace(':', '') }}"
+          - "Current time: {{ lookup('pipe','date -d \"now \" +%Y-%m-%d\\ %H:%M:%S') }}"
+          - "Current time + 8 hrs: {{ lookup('pipe','date -d \"now + 8 hours\" +%Y-%m-%d\\ %H:%M:%S') }}"
+                                                    # (date -d \"2024-10-02 15:49:20 + 8 hours\" +%Y-%m-%d_%H:%M:%S')
+
+
+
+
+    - name: Prepare the date string
+      ansible.builtin.set_fact:
+        date_start_string: "{{ date_start + ' ' + time_start }}"
+
+    - name: Convert the string to date format
+      ansible.builtin.set_fact:
+        date_start_string: "{{ date_start_string | to_datetime }}"
+
+
+        # date_start_string: '{{  date_start + " " + time_start | string | to_datetime("%Y-%m-%d %H:%M:%S") }}'
+
+        #date_end_string: "{{ date_end + ' ' + time_end | to_datetime }}"
+
+# 2022-11-10 08:00:00
+# 2016-08-14 20:00:12
+
+    - name: Print the List
+      debug:
+        msg: "{{ date_start_string }}"
+
+    - name: Time difference
+      debug:
+        msg: '{{ (("2016-08-14 20:00:12" | to_datetime) - ("2015-12-25" | to_datetime("%Y-%m-%d"))).total_seconds()  }}'
+
+
+
+    # - name: Print the List
+    #   debug:
+    #     msg: "{{ date_start_string }}, {{ date_end_string  }}"
+
+    # - name: Concatenate a list to string
+    #   set_fact:
+    #     my_string: "{{ my_list | join(',') }}"
+
+    # - name: Print the String
+    #   debug:
+    #     msg: "{{ my_string }}"
+
+    # - name: "New Task Added"
+    #   ansible.builtin.debug:
+    #     msg: "This is a new task added for demo"
+
+
+
+# ---
+# - name: Fetch details from database
+#   hosts: localhost
+#   gather_facts: false
+#   vars:
+#     current_date: "{{ lookup('pipe', 'date -u +%Y%m%d%H%M%SZ') }}"
+#     current_date2: "{{ lookup('pipe','date -d \"now + 8 hours\" +%Y%m%d%H%M%SZ') | string }}"
+#     another_date: '2025-05-08 14:40:00'
+
+#   vars_files:
+#     - vars/general.yaml
+#   tasks:
+#     - ansible.builtin.set_fact:
+#         new_date: "{{ another_date | regex_replace('[-: ]', '') ~ 'Z' }}"
+#         sg_date_time: "{{ current_date2 }}"
+#     - name: Debug current_date raw value
+#       ansible.builtin.debug:
+#         msg:
+#           - "Raw current_date: {{ current_date }}"
+#           - "SG: {{ sg_date_time }}"
+#           - "another 1: {{ another_date }}"
+#           - "another 2: {{ another_date | regex_replace('[-: ]', '') ~ 'Z' }}"
+#           - "another 3: {{ new_date }}"
+#           - "another 4: {{ new_date | to_datetime('%Y%m%d%H%M%SZ') }}"
+
+
+#     - name: Check how long the certificate is valid
+#       ansible.builtin.set_fact:
+#         day_difference: >-
+#           {{
+#             (current_date | to_datetime('%Y%m%d%H%M%SZ') -
+#             new_date | to_datetime('%Y%m%d%H%M%SZ'))
+#             .days
+#           }}
+
+#     - name: Validate time
+#       assert:
+#         that:
+#           - sg_date_time | to_datetime('%Y%m%d%H%M%SZ') > new_date | to_datetime('%Y%m%d%H%M%SZ')
+
+
+#     - name: Debug current_date raw value
+#       ansible.builtin.debug:
+#         msg: "New: {{ current_date_formatted }}"
+
+#     - name: Format current date like database timestamps
+#       ansible.builtin.set_fact:
+#         current_date_formatted: "{{ current_date | to_datetime('%Y%m%d%H%M%SZ') | strftime('%Y-%m-%d %H:%M:%S') }}"
+
+#     - name: Display details (DEBUG)
+#       ansible.builtin.debug:
+#         msg:
+#           # - "From: {{ cr_date_from }}"
+#           # - "To: {{ cr_date_to }}"
+#           - "Current date: {{ current_date_formatted }}"
