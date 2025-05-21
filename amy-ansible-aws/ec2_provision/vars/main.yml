@@ -1,0 +1,8 @@
+---
+# vars file for ec2_provision
+region: ap-southeast-1
+ami: ami-0c140d4585dfe62d1
+instance_type: t2.micro
+key_name: my-key
+security_group: my-security-group
+count: 1
