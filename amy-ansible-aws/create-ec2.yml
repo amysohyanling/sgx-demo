@@ -44,7 +44,7 @@
           state: present
           create_on_missing: true
         register: aws_ec2_key_pair
-        no_log: true
+        # no_log: true
 
 
       - name: Start an instance with a public IP address
