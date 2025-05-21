@@ -4,7 +4,7 @@
   gather_facts: False
 
   vars:
-    key_name: amy_aws_02             # Key used for SSH
+    key_name: amy_aws_04             # Key used for SSH
     region: ap-southeast-2       # Region may affect response and pricing
     image: ami-0c140d4585dfe62d1 # look in ec2 > ami (filter owner alias: amazon) or amis of manually launched instances
     id: "example testing"
@@ -63,8 +63,8 @@
             Content-Type: "application/json"
           body_format: json
           body:
-            name: "amyexample03"
-            description: "testing1"
+            name: "amyexample04"
+            description: "testing"
             credential_type: 1                     # ID 1 = Machine Credential
             inputs:
               username: ec2-user
