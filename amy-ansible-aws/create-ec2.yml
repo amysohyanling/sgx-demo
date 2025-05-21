@@ -10,7 +10,7 @@
     id: "example testing"
     instance_type: t2.micro       # Choose instance type, check AWS for pricing
     vpc_id: vpc-01919eff30f3ad8f6
-    sec_group: "test-security-group"
+    sec_group: "launch-wizard"
 
   tasks:
     - name: Provisioning EC2 instances
