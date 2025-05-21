@@ -21,6 +21,7 @@
           name: "{{ sec_group }}"
           description: "Sec group for app"
           region: "{{ region }}"
+          vpc_id: vpc-01919eff30f3ad8f6
           # aws_access_key: "{{ec2_access_key}}"  # From vault as defined
           # aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined
           rules:                                # allows ssh on port 22
@@ -43,7 +44,7 @@
         amazon.aws.ec2_instance:
           name: "public-compute-instance"
           key_name: "{{ key_name }}"
-          # vpc_subnet_id: "{{ vpc_id }}"
+          vpc_subnet_id: "{{ vpc_id }}"
           instance_type: "{{ instance_type }}"
           security_group: "{{ sec_group }}"
           # aws_access_key: "{{ ec2_access_key }}"
