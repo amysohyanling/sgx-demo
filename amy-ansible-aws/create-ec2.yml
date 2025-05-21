@@ -31,11 +31,20 @@
               cidr_ip: 0.0.0.0/0
               rule_desc: allow all on ssh port
 
-      - name: Amazon EC2 | Create Key Pair from existing .pub file
+      # - name: Amazon EC2 | Create Key Pair from existing .pub file
+      #   amazon.aws.ec2_key:
+      #     name: "{{ key_name }}"
+      #     region: "{{ region }}"
+      #     key_material: "{{ lookup('file', 'files/my_aws.pub') }}"
+
+      - name: Create a new EC2 key pair (AWS generates key)
         amazon.aws.ec2_key:
           name: "{{ key_name }}"
           region: "{{ region }}"
-          key_material: "{{ lookup('file', 'files/my_aws.pub') }}"
+          state: present
+          create_on_missing: true
+        register: aws_ec2_key_pair
+        no_log: true
 
 
       - name: Start an instance with a public IP address
