@@ -1,2 +1,9 @@
+---
 collections:
-- name: community.general
+  - redhat.satellite
+  - redhat.insights
+  - ansible.tower
+  - amazon.aws
+  - redhat_cop.tower_configuration
+  - community.general
+  #https://github.com/theforeman/foreman-ansible-modules
