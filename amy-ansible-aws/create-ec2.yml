@@ -47,7 +47,7 @@
         register: aws_ec2_key_pair
         # no_log: true
 
-      - name: Save private key to file
+      - name: Save private key to file #need to update this again
         ansible.builtin.copy:
           content: "{{ aws_ec2_key_pair.key.private_key }}"
           dest: "./{{ key_name }}.pem"
@@ -63,7 +63,7 @@
             Content-Type: "application/json"
           body_format: json
           body:
-            name: "amyexample06" #change this if want to add new one 06 exist
+            name: "amyexample06" #change this if want to add new one 06 exist 
             description: "testing"
             credential_type: 1                     # ID 1 = Machine Credential
             organization: 1
