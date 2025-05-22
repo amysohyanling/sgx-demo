@@ -17,10 +17,12 @@
     #   ansible.builtin.command: subscription-manager clean
     #   ignore_errors: true
 
-    - name: Install Satellite CA certificate
+    - name: Install Satellite CA certificate without GPG check
       ansible.builtin.yum:
         name: "http://satellite.7hmbl.sandbox2523.opentlc.com/pub/katello-ca-consumer-latest.noarch.rpm"
         state: present
+        disable_gpg_check: true
+
 
     - name: Register system to Satellite using activation key
       ansible.builtin.command: >
