@@ -4,7 +4,7 @@
   vars:
     satellite_url: "https://satellite.7hmbl.sandbox2523.opentlc.com"
     activation_key: "RHEL9"
-    org: "Default Organization"
+    org: "Default_Organization"
 
   tasks:
 
