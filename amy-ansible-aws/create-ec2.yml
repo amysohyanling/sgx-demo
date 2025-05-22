@@ -4,7 +4,7 @@
   gather_facts: False
 
   vars:
-    key_name: amy_aws_06             # Key used for SSH
+    key_name: amy_aws_06             # Key used for SSH #change this if want to add new one 06 exist
     region: ap-southeast-2       # Region may affect response and pricing
     image: ami-0c140d4585dfe62d1 # look in ec2 > ami (filter owner alias: amazon) or amis of manually launched instances
     id: "example testing"
@@ -63,7 +63,7 @@
             Content-Type: "application/json"
           body_format: json
           body:
-            name: "amyexample06"
+            name: "amyexample06" #change this if want to add new one 06 exist
             description: "testing"
             credential_type: 1                     # ID 1 = Machine Credential
             organization: 1
@@ -103,7 +103,7 @@
 
       - name: Launch EC2 with valid SG ID
         amazon.aws.ec2_instance:
-          name: "amyexample06"
+          name: "amyexample06" #change this if want to add new one 06 exist
           region: "{{ region }}"
           image_id: "{{ image }}"
           instance_type: "{{ instance_type }}"
