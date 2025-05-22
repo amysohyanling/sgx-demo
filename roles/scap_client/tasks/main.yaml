@@ -3,7 +3,7 @@
   yum:
     name:
      - openscap-scanner
-     - rubygem-foreman_scap_client
+   #  - rubygem-foreman_scap_client
     state: present
 
 - name: Get Policy parameters
