@@ -2,8 +2,8 @@
 - name: Install openscap client packages
   yum:
     name:
-     - openscap-scanner
-   #  - rubygem-foreman_scap_client
+      - openscap-scanner
+      - rubygem-foreman_scap_client
     state: present
 
 - name: Get Policy parameters
