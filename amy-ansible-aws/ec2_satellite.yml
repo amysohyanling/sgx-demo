@@ -3,7 +3,7 @@
   become: true
   vars:
     satellite_url: "https://satellite.7hmbl.sandbox2523.opentlc.com"
-    activation_key: "RHEL9"
+    activation_key: "RHEL8_QA"
     org: "Default_Organization"
 
   tasks:
@@ -40,7 +40,7 @@
     - name: Ensure system is subscribed
       ansible.builtin.command: subscription-manager status
 
-    - name: Enable Red Hat repos (optional - if not done via content view)
-      ansible.builtin.command: >
-        subscription-manager repos --enable=rhel-7-server-rpms
-      when: ansible_distribution_major_version == "7"
+    # - name: Enable Red Hat repos (optional - if not done via content view)
+    #   ansible.builtin.command: >
+    #     subscription-manager repos --enable=rhel-7-server-rpms
+    #   when: ansible_distribution_major_version == "7"
