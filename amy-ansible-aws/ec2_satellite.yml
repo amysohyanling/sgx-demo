@@ -30,6 +30,7 @@
         --org="{{ org }}"
         --activationkey="{{ activation_key }}"
         --serverurl="{{ satellite_url }}"
+        --force
       register: register_result
       changed_when: "'The system has been registered' in register_result.stdout"
 
