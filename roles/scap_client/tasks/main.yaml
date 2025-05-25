@@ -97,27 +97,24 @@
 # #    hour: "{{crontab_hour}}"
 # #    minute: "{{crontab_minute}}"
 # #    user: root
-- name: Clean and make DNF cache, then check if rubygem-foreman_scap_client is available
-  hosts: all
-  become: yes
-  tasks:
 
-    - name: Clean DNF metadata
-      ansible.builtin.command: dnf clean all
 
-    - name: Refresh DNF repository cache
-      ansible.builtin.command: dnf makecache
+- name: Clean DNF metadata
+  ansible.builtin.command: dnf clean all
 
-    - name: Get info about rubygem-foreman_scap_client
-      ansible.builtin.command: dnf info rubygem-foreman_scap_client
-      register: scap_info
-      ignore_errors: yes
+- name: Refresh DNF repository cache
+  ansible.builtin.command: dnf makecache
 
-    - name: Show info output
-      ansible.builtin.debug:
-        var: scap_info.stdout_lines
+- name: Get info about rubygem-foreman_scap_client
+  ansible.builtin.command: dnf info rubygem-foreman_scap_client
+  register: scap_info
+  ignore_errors: yes
 
-    - name: Fail if package is not available
-      ansible.builtin.fail:
-        msg: "rubygem-foreman_scap_client is NOT available in enabled repositories!"
-      when: "'Available Packages' not in scap_info.stdout"
+- name: Show info output
+  ansible.builtin.debug:
+    var: scap_info.stdout_lines
+
+- name: Fail if package is not available
+  ansible.builtin.fail:
+    msg: "rubygem-foreman_scap_client is NOT available in enabled repositories!"
+  when: "'Available Packages' not in scap_info.stdout"
