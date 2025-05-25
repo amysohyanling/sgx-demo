@@ -10,8 +10,8 @@
 - name: Clean DNF cache
   ansible.builtin.command: dnf clean all
 
-- name: Make DNF cache
-  ansible.builtin.command: dnf makecache
+# - name: Make DNF cache
+#   ansible.builtin.command: dnf makecache
 
 - name: Install openscap client packages
   ansible.builtin.yum:
