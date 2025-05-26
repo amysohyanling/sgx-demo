@@ -1,6 +1,6 @@
 ---
 - name: Pre-check
-  hosts: all
+  hosts: RHEL7_Dev
   gather_facts: yes
   become: yes
 
