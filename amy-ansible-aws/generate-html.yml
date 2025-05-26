@@ -20,7 +20,7 @@
   vars:
     render_host: ansible-1.7hmbl.sandbox2523.opentlc.com
     render_user: student
-    report_output: /home/student/check_results/combined_diff.html
+    report_output: /home/student/combined_diff.html
   tasks:
     - name: Collect all pre/post data from hosts
       set_fact:
@@ -38,7 +38,7 @@
 
     - name: Generate combined HTML report
       template:
-        src: templates/combined_diff_report.j2
+        src: combined_diff_report.j2
         dest: "{{ report_output }}"
       delegate_to: "{{ render_host }}"
       remote_user: "{{ render_user }}"
