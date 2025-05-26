@@ -1,0 +1,74 @@
+---
+- name: Ensure accounts with empty passwords cannot login
+  hosts: node1.example.com
+  become: true
+  tasks:
+
+    - name: Check if system uses authselect
+      ansible.builtin.stat:
+        path: /usr/bin/authselect
+      register: result_authselect_present
+      when: ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+      tags:
+        - no_empty_passwords
+
+    - name: Remediate using authselect if present
+      block:
+
+        - name: Check integrity of authselect current profile
+          ansible.builtin.command:
+            cmd: authselect check
+          register: result_authselect_check_cmd
+          changed_when: false
+          failed_when: false
+
+        - name: Assert authselect profile integrity
+          ansible.builtin.assert:
+            that:
+              - result_authselect_check_cmd.rc == 0
+            fail_msg:
+              - "authselect integrity check failed. Remediation aborted!"
+              - "A proper authselect profile must be selected and intact."
+              - "Avoid manually editing PAM files when authselect is in use."
+            success_msg:
+              - "authselect integrity check passed."
+
+        - name: Get current authselect features
+          ansible.builtin.shell: "authselect current | tail -n+3 | awk '{ print $2 }'"
+          register: result_authselect_features
+          changed_when: false
+          when: result_authselect_check_cmd is success
+
+        - name: Enable 'without-nullok' if not already present
+          ansible.builtin.command:
+            cmd: authselect enable-feature without-nullok
+          register: result_authselect_enable_feature_cmd
+          when:
+            - result_authselect_check_cmd is success
+            - result_authselect_features.stdout is not search("without-nullok")
+
+        - name: Apply authselect changes
+          ansible.builtin.command:
+            cmd: authselect apply-changes -b
+          when:
+            - result_authselect_enable_feature_cmd is not skipped
+            - result_authselect_enable_feature_cmd is success
+
+      when:
+        - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+        - result_authselect_present.stat.exists
+      tags:
+        - no_empty_passwords
+
+    - name: Fallback - Remove 'nullok' from PAM configs directly if authselect not used
+      ansible.builtin.replace:
+        dest: "{{ item }}"
+        regexp: nullok
+      loop:
+        - /etc/pam.d/system-auth
+        - /etc/pam.d/password-auth
+      when:
+        - ansible_virtualization_type not in ["docker", "lxc", "openvz", "podman", "container"]
+        - not result_authselect_present.stat.exists
+      tags:
+        - no_empty_passwords
