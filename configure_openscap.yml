@@ -1,6 +1,5 @@
 ---
-- hosts: "{{ HOSTS }}"
-  become: yes
+- become: yes
   vars:
     policy_name: all
   roles:
