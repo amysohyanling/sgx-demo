@@ -6,7 +6,8 @@
       template:
         src: diff_template.j2
         dest: "/home/student/{{ inventory_hostname }}_diff.html"
-      delegate_to: localhost
+      delegate_to: ansible-1.7hmbl.sandbox2523.opentlc.com
+      remote_user: student
       vars:
         pre_data: "{{ hostvars[inventory_hostname]['pre_data'] }}"
         post_data: "{{ hostvars[inventory_hostname]['post_data'] }}"
