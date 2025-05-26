@@ -1,0 +1,16 @@
+- name: Post-check
+  hosts: RHEL7_Dev
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - name: Set post-check data using set_stats
+      set_stats:
+        data:
+          post_data:
+            hostname: "{{ ansible_hostname }}"
+            os: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
+            kernel: "{{ ansible_kernel }}"
+            memory_mb: "{{ ansible_memtotal_mb }}"
+            selinux: "{{ ansible_selinux.status if ansible_selinux is defined else 'unknown' }}"
+            disk_root: "{{ (ansible_mounts | selectattr('mount', 'equalto', '/') | list | first | default({})).size_available | default(0) }}"
