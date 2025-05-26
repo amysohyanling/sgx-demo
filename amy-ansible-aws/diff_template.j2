@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Diff Report - {{ inventory_hostname }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #2e6c80; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        .changed { background-color: #ffe6e6; }
+    </style>
+</head>
+<body>
+    <h2>System Diff Report - {{ inventory_hostname }}</h2>
+    <table>
+        <tr>
+            <th>Field</th>
+            <th>Pre-check</th>
+            <th>Post-check</th>
+        </tr>
+        {% for key in post_data %}
+        <tr class="{% if pre_data[key] != post_data[key] %}changed{% endif %}">
+            <td>{{ key }}</td>
+            <td>{{ pre_data[key] }}</td>
+            <td>{{ post_data[key] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><small>Generated on {{ ansible_date_time.date }} {{ ansible_date_time.time }}</small></p>
+</body>
+</html>

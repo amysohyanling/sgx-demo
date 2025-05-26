@@ -1,0 +1,12 @@
+- name: Generate HTML diff report
+  hosts: RHEL7_Dev
+  gather_facts: yes  # needed for ansible_date_time
+  tasks:
+    - name: Generate HTML report from template
+      template:
+        src: diff_template.j2
+        dest: "./{{ inventory_hostname }}_diff.html"
+      delegate_to: localhost
+      vars:
+        pre_data: "{{ hostvars[inventory_hostname]['pre_data'] }}"
+        post_data: "{{ hostvars[inventory_hostname]['post_data'] }}"
