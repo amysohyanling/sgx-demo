@@ -1,14 +1,14 @@
 ---
-- name: Enable Satellite Tools repo for RHEL 8
-  ansible.builtin.command:
-    cmd: >
-      subscription-manager repos
-      --enable=satellite-tools-6.13-for-rhel-8-x86_64-rpms
-  register: repo_enable
-  changed_when: "'enabled' in repo_enable.stdout"
+# - name: Enable Satellite Tools repo for RHEL 8
+#   ansible.builtin.command:
+#     cmd: >
+#       subscription-manager repos
+#       --enable=satellite-tools-6.13-for-rhel-8-x86_64-rpms
+#   register: repo_enable
+#   changed_when: "'enabled' in repo_enable.stdout"
 
-- name: Clean DNF cache
-  ansible.builtin.command: dnf clean all
+# - name: Clean DNF cache
+  # ansible.builtin.command: dnf clean all
 
 # - name: Make DNF cache
 #   ansible.builtin.command: dnf makecache
