@@ -1,13 +1,48 @@
-- name: Generate HTML diff report
-  hosts: RHEL7_Dev
-  gather_facts: yes  # needed for ansible_date_time
+---
+# - name: Generate HTML diff report
+#   hosts: RHEL7_Dev
+#   gather_facts: yes  # needed for ansible_date_time
+#   tasks:
+#     - name: Generate HTML report from template
+#       template:
+#         src: diff_template.j2
+#         dest: "/home/student/{{ inventory_hostname }}_diff.html"
+#       delegate_to: ansible-1.7hmbl.sandbox2523.opentlc.com
+#       remote_user: student
+#       vars:
+#         pre_data: "{{ hostvars[inventory_hostname]['pre_data'] }}"
+#         post_data: "{{ hostvars[inventory_hostname]['post_data'] }}"
+
+
+- name: Generate combined HTML report
+  hosts: localhost
+  gather_facts: yes
+  vars:
+    render_host: ansible-1.7hmbl.sandbox2523.opentlc.com
+    render_user: student
+    report_output: /home/student/check_results/combined_diff.html
   tasks:
-    - name: Generate HTML report from template
+    - name: Collect all pre/post data from hosts
+      set_fact:
+        pre_data_all: "{{ dict(groups['RHEL7_Dev'] | zip(groups['RHEL7_Dev'] | map('extract', hostvars, 'pre_data'))) }}"
+        post_data_all: "{{ dict(groups['RHEL7_Dev'] | zip(groups['RHEL7_Dev'] | map('extract', hostvars, 'post_data'))) }}"
+        host_list: "{{ groups['RHEL7_Dev'] }}"
+
+    - name: Ensure output directory exists
+      file:
+        path: /home/student/check_results
+        state: directory
+        mode: '0755'
+      delegate_to: "{{ render_host }}"
+      remote_user: "{{ render_user }}"
+
+    - name: Generate combined HTML report
       template:
-        src: diff_template.j2
-        dest: "/home/student/{{ inventory_hostname }}_diff.html"
-      delegate_to: ansible-1.7hmbl.sandbox2523.opentlc.com
-      remote_user: student
+        src: templates/combined_diff_report.j2
+        dest: "{{ report_output }}"
+      delegate_to: "{{ render_host }}"
+      remote_user: "{{ render_user }}"
       vars:
-        pre_data: "{{ hostvars[inventory_hostname]['pre_data'] }}"
-        post_data: "{{ hostvars[inventory_hostname]['post_data'] }}"
+        pre_data_all: "{{ pre_data_all }}"
+        post_data_all: "{{ post_data_all }}"
+        host_list: "{{ host_list }}"
