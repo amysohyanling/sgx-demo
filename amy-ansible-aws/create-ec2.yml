@@ -4,7 +4,7 @@
   gather_facts: False
 
   vars:
-    key_name: amy_aws_rhel8_03             # Key used for SSH #change this if want to add new one 06 exist
+    key_name: amy_aws_rhel8_04             # Key used for SSH #change this if want to add new one 06 exist
     region: ap-southeast-2       # Region may affect response and pricing
     image: ami-0b09cff8760f58dd2 # look in ec2 > ami (filter owner alias: amazon) or amis of manually launched instances
     id: "example testing"
