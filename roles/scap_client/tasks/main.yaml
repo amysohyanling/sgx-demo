@@ -16,7 +16,7 @@
     body_format: json
     validate_certs: False
   register: policies
-  no_log: "{{ foreman_operations_scap_client_secure_logging }}"
+  # no_log: "{{ foreman_operations_scap_client_secure_logging }}"
 
 - name: Build policy {{ policy_name }} parameters
   set_fact:
