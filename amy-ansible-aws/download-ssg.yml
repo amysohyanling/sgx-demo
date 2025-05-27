@@ -1,27 +1,30 @@
 - name: Download-ssg
   hosts: RHEL7_Dev
   become: true
+  vars:
+    rex_pub_key_path: files/satellite.pub
+
   tasks:
-    - name: Refresh Red Hat subscription
-      ansible.builtin.command: subscription-manager refresh
-      register: refresh_output
-      changed_when: false
+    - name: Ensure /root/.ssh directory exists
+      ansible.builtin.file:
+        path: /root/.ssh
+        state: directory
+        mode: '0700'
+        owner: root
+        group: root
 
-    - name: Clean all yum metadata
-      ansible.builtin.command: yum clean all
-      register: clean_output
-      changed_when: false
+    - name: Copy Satellite Remote Execution public key
+      ansible.builtin.copy:
+        src: "{{ rex_pub_key_path }}"
+        dest: /root/.ssh/authorized_keys
+        mode: '0600'
+        owner: root
+        group: root
+        backup: yes
 
-    - name: List enabled repositories
-      ansible.builtin.command: yum repolist
-      register: repolist_output
-      changed_when: false
-
-    - name: Search for scap-security-guide package
-      ansible.builtin.command: yum search scap-security-guide
-      register: scap_search
-      changed_when: false
-
-    - name: Show result of scap package search
-      ansible.builtin.debug:
-        msg: "{{ scap_search.stdout_lines }}"
+    - name: Ensure public key is present and not duplicated
+      ansible.builtin.lineinfile:
+        path: /root/.ssh/authorized_keys
+        line: "{{ lookup('file', rex_pub_key_path) }}"
+        create: yes
+        state: present
