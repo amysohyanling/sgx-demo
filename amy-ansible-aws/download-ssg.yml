@@ -2,21 +2,26 @@
   hosts: RHEL7_Dev
   become: true
   tasks:
-    - name: Check subscription status
-      ansible.builtin.command: subscription-manager status
-      register: sub_status
+    - name: Refresh Red Hat subscription
+      ansible.builtin.command: subscription-manager refresh
+      register: refresh_output
       changed_when: false
 
-    - name: Enable required Red Hat repos
-      ansible.builtin.command: >
-        subscription-manager repos
-        --enable=rhel-7-server-rpms
-        --enable=rhel-7-server-extras-rpms
-        --enable=rhel-7-server-optional-rpms
-      register: enable_repos
-      changed_when: "'enabled' in enable_repos.stdout"
+    - name: Clean all yum metadata
+      ansible.builtin.command: yum clean all
+      register: clean_output
+      changed_when: false
 
-    - name: Install scap-security-guide package
-      ansible.builtin.yum:
-        name: scap-security-guide
-        state: present
+    - name: List enabled repositories
+      ansible.builtin.command: yum repolist
+      register: repolist_output
+      changed_when: false
+
+    - name: Search for scap-security-guide package
+      ansible.builtin.command: yum search scap-security-guide
+      register: scap_search
+      changed_when: false
+
+    - name: Show result of scap package search
+      ansible.builtin.debug:
+        msg: "{{ scap_search.stdout_lines }}"
