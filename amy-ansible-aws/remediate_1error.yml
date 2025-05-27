@@ -18,7 +18,7 @@
         - name: Check integrity of authselect current profile
           ansible.builtin.command:
             cmd: authselect check
-          register: result_authselect_check_cmd
+          register: result_authselect_check_cmdrerem
           changed_when: false
           failed_when: false
 
