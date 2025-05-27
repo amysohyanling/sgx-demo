@@ -2,16 +2,28 @@
   hosts: RHEL7_Dev
   become: true
   tasks:
-    - name: Install scap-security-guide package
-      ansible.builtin.yum:
-        name: scap-security-guide
-        state: present
+  vars:
+      rhsm_username: amysoh
+      rhsm_password: Kopimickey141220!
 
-    - name: Verify SCAP content directory
-      ansible.builtin.stat:
-        path: /usr/share/xml/scap/ssg/content/ssg-rhel7-ds.xml
-      register: scap_file
+    tasks:
+      - name: Check if system is already registered
+        ansible.builtin.command: subscription-manager status
+        register: subscription_status
+        failed_when: false
+        changed_when: false
 
-    - name: Debug SCAP content presence
-      ansible.builtin.debug:
-        msg: "SCAP content found: {{ scap_file.stat.exists }}"
+      - name: Register system to Red Hat if not already registered
+        ansible.builtin.command: >
+          subscription-manager register
+          --username={{ rhsm_username }}
+          --password={{ rhsm_password }}
+        when: "'Overall Status: Unknown' in subscription_status.stdout"
+        register: register_output
+        changed_when: "'The system has been registered' in register_output.stdout"
+
+      - name: Auto-attach subscription
+        ansible.builtin.command: subscription-manager attach --auto
+        when: "'Overall Status: Unknown' in subscription_status.stdout"
+        register: attach_output
+        changed_when: "'Successfully attached a subscription' in attach_output.stdout"
