@@ -1,7 +1,6 @@
 - name: Download-ssg
   hosts: RHEL7_Dev
   become: true
-  tasks:
   vars:
       rhsm_username: amysoh
       rhsm_password: Kopimickey141220!
