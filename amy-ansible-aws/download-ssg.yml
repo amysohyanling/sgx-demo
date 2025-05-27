@@ -2,7 +2,7 @@
   hosts: RHEL7_Dev
   become: true
   vars:
-    rex_pub_key_path: files/satellite.pub
+    rex_pub_key_path: /home/student/files/satellite.pub
 
   tasks:
     - name: Ensure /root/.ssh directory exists
